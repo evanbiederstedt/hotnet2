@@ -19,7 +19,7 @@ def hotnet2_diffusion(G, nodes, beta, verbose):
     n = np.shape(W)[1]
 
     ## Create PPR matrix
-    return beta*inv(np.eye(n)-(1.-beta)*W)
+    return np.asarray(beta*inv(np.eye(n)-(1.-beta)*W), dtype=np.float32)
 
 ################################################################################
 # HOTNET DIFFUSION (HEAT EQUATION)
@@ -30,7 +30,7 @@ def hotnet_diffusion(G, nodes, time, verbose):
     if verbose > 1: print "* Creating HotNet diffusion matrix for time t=%s..." % time
     L = nx.laplacian_matrix(G)
     Li = expm_eig( -time * L.todense() )
-    return Li
+    return np.asarray(Li, dtype=np.float32)
 
 def expm_eig(A):
     """
@@ -42,7 +42,7 @@ def expm_eig(A):
 ################################################################################
 # HELPERS
 ################################################################################
-        
+
 # Run the entire HotNet2 diffusion process from start to finish
 def save_diffusion_to_file( diffusion_type, diffusion_param, index_file, edge_file,
                             output_file, params=dict(), verbose=0):
@@ -77,7 +77,7 @@ def save_diffusion_to_file( diffusion_type, diffusion_param, index_file, edge_fi
         output['Li']   = hotnet_diffusion(G, nodes, output['time'], verbose)
     else:
         raise NotImplementedError('Diffusion of type "%s" not implemented' % diffusion_type)
-        
+
     hnio.save_hdf5(output_file, output)
 
 # Load a graph from file

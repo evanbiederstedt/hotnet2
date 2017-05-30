@@ -369,14 +369,13 @@ def write_file(file_path, text):
     with open(file_path, 'w') as f:
         f.write(text)
 
-
 def load_network(file_path, infmat_name):
     """
     Load an influence matrix from the file path, using the file path extension
     to figure out how to load the file.
     """
     H = load_hdf5(file_path)
-    PPR = np.asarray(H[infmat_name])
+    PPR = np.asarray(H[infmat_name], dtype=np.float32)
     indexToGene = dict( zip(range(np.shape(PPR)[0]), H['nodes']) )
     G = nx.Graph()
     G.add_edges_from(H['edges'])
