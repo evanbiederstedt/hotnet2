@@ -44,10 +44,15 @@ def get_parser():
 
     parser.add_argument('-o', '--output_dir', required=True,
                         help='Output directory.')
-    parser.add_argument('-c', '--cores', default=1, type=int,
+    parser.add_argument('-cp', '--cores_permutations', default=1, type=int,
+                        help='Use given number of cores. Pass -1 to use all available.')
+    parser.add_argument('-cm', '--cores_matrices', default=1, type=int,
                         help='Use given number of cores. Pass -1 to use all available.')
 
     return parser
+
+def save_diffusion_to_file_wrapper(args):
+    return save_diffusion_to_file(*args)
 
 def run(args):
     # create output directory if doesn't exist; warn if it exists and is not empty
@@ -72,7 +77,7 @@ def run(args):
         perm_path = '{}/{}_ppr_{:g}_##NUM##.h5'.format(perm_dir, args.prefix, args.beta)
         if not os.path.exists(perm_dir): os.makedirs(perm_dir)
         pargs = '-q %s -s %s -e %s -p %s -o %s -n %s -c %s' % (args.Q, args.permutation_start_index, args.edgelist_file,
-                                                         args.prefix, perm_dir, args.num_permutations, args.cores)
+                                                         args.prefix, perm_dir, args.num_permutations, args.cores_permutations)
         permute.run(permute.get_parser().parse_args(pargs.split()))
 
         # make permuted PPRs
@@ -81,12 +86,21 @@ def run(args):
         diffusion_args = []
         params = dict(network_name=args.network_name, beta=args.beta)
         for i in range(args.permutation_start_index, args.permutation_start_index + args.num_permutations):
-            sys.stdout.write("\r{}/{}".format(i, args.permutation_start_index + args.num_permutations - 1))
-            sys.stdout.flush()
-
             edge_file = '%s/%s_edgelist_%s' % (perm_dir, args.prefix, i)
             output_file = "{}/{}_ppr_{:g}_{}.h5".format(perm_dir, args.prefix, args.beta, i)
-            save_diffusion_to_file( HOTNET2, args.beta, args.gene_index_file, edge_file, output_file, params=params, verbose=0 )
+            diffusion_args.append( (HOTNET2, args.beta, args.gene_index_file, edge_file, output_file, params, verbose=0) )
+
+        if args.cores != 1:
+            pool = mp.Pool(None if args.cores == -1 else args.cores)
+            map_fn = pool.imap
+        else:
+            map_fn = map
+
+        _ = map_fn(save_diffusion_to_file_wrapper, diffusion_args)
+
+        if args.cores != 1:
+            pool.close()
+            pool.join()
 
 if __name__ == "__main__":
     run(get_parser().parse_args(sys.argv[1:]))
