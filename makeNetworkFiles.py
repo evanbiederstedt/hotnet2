@@ -90,15 +90,15 @@ def run(args):
             output_file = "{}/{}_ppr_{:g}_{}.h5".format(perm_dir, args.prefix, args.beta, i)
             diffusion_args.append( (HOTNET2, args.beta, args.gene_index_file, edge_file, output_file, params, verbose=0) )
 
-        if args.cores != 1:
-            pool = mp.Pool(None if args.cores == -1 else args.cores)
+        if args.cores_matrices != 1:
+            pool = mp.Pool(None if args.cores_matrices == -1 else args.cores_matrices)
             map_fn = pool.imap
         else:
             map_fn = map
 
         _ = map_fn(save_diffusion_to_file_wrapper, diffusion_args)
 
-        if args.cores != 1:
+        if args.cores_matrices != 1:
             pool.close()
             pool.join()
 
