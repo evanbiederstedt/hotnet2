@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 # Load required modules
 import sys, os, networkx as nx, multiprocessing as mp
@@ -38,7 +38,7 @@ def permute_network( G, Q, numEdges, outputFile ):
     return swaps
 
 store = dict(maxSeen=-1)
-def permute_network_wrapper((G, Q, numEdges, outputFile, i, n)):
+def permute_network_wrapper(G, Q, numEdges, outputFile, i, n):
     swaps = permute_network( G, Q, numEdges, outputFile )
     store['maxSeen'] = max(store['maxSeen'], i)
     sys.stdout.write("\r{}/{}".format(store['maxSeen'], n))
@@ -57,11 +57,11 @@ def run(args):
 
     # Report info about the graph and number of swaps
     Q = args.Q
-    print "\t- {} edges among {} nodes.".format(numEdges, numNodes)
-    print "\t- No. swaps to attempt = {}".format(Q*numEdges)
+    print("\t- {} edges among {} nodes.".format(numEdges, numNodes))
+    print("\t- No. swaps to attempt = {}".format(Q*numEdges))
 
     # Permute graph the prescribed number of times
-    print "* Creating permuted networks..."
+    print("* Creating permuted networks...")
     def outputFileName(i):
         return "{}/{}_edgelist_{}".format(args.output_dir, args.output_prefix, i+args.start_index)
 
@@ -74,14 +74,12 @@ def run(args):
         pool.close()
         pool.join()
     else:
-        swaps = [ permute_network_wrapper((G, Q, numEdges, outputFileName(i), i+args.start_index, n))
-                  for i in range(n) ]
+        swaps = [ permute_network_wrapper((G, Q, numEdges, outputFileName(i), i+args.start_index, n)) for i in range(n) ]
 
-    print
 
     # Report how many swaps were actually made
     avgSwaps = int(sum(swaps) / float(len(swaps)))
-    print "* Avg. No. Swaps Made: {}".format(avgSwaps)
+    print("* Avg. No. Swaps Made: {}".format(avgSwaps))
 
 if __name__ == "__main__":
     run(get_parser().parse_args(sys.argv[1:]))
