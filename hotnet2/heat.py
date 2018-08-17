@@ -176,9 +176,7 @@ def fm_heat(gene2heat, fm_threshold, cis_threshold=0.01, CIS=False):
 
 def mutsig_heat(gene2mutsig, threshold=1.0):
     print("* Creating MutSig heat map...")
-    gene2heat = dict((gene, -log10(score["qval"]))
-                     for gene, score in gene2mutsig.items()
-                     if score["qval"] < threshold)
+    gene2heat = dict((gene, -log10(score["qval"])) for gene, score in gene2mutsig.items() if score["qval"] < threshold)
     print("\t- Including", len(gene2heat), "genes at threshold", threshold)
     return gene2heat
 
@@ -188,8 +186,7 @@ def music_heat(gene2music, threshold=1.0, max_heat=15):
     def music_heat(qvals):
         heat = scipy.median([ qvals["FDR_CT"], qvals["FDR_LRT"], qvals["FDR_FCPT"] ])
         return -log10(heat) if heat != 0 else max_heat
-    gene2heat = dict((gene, music_heat(scores)) for gene, scores in list(gene2music.items())
-        if scipy.median(list(scores.values())) < threshold)
+    gene2heat = dict((gene, music_heat(scores)) for gene, scores in list(gene2music.items()) if scipy.median(list(scores.values())) < threshold)
     print("\t- Including", len(gene2heat), "genes at threshold", threshold)
     return gene2heat
 

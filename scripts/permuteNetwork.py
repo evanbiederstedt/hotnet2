@@ -38,7 +38,8 @@ def permute_network( G, Q, numEdges, outputFile ):
     return swaps
 
 store = dict(maxSeen=-1)
-def permute_network_wrapper(G, Q, numEdges, outputFile, i, n):
+def permute_network_wrapper(permute_network_wrapper_arg):
+    (G, Q, numEdges, outputFile, i, n) = permute_network_wrapper_arg
     swaps = permute_network( G, Q, numEdges, outputFile )
     store['maxSeen'] = max(store['maxSeen'], i)
     sys.stdout.write("\r{}/{}".format(store['maxSeen'], n))
@@ -48,7 +49,7 @@ def permute_network_wrapper(G, Q, numEdges, outputFile, i, n):
 def run(args):
     # Load graph
     from hotnet2 import largest_component
-    print "* Loading edge list.."
+    print("* Loading edge list..")
     G = nx.Graph()
     with open(args.edgelist_file) as infile:
         G.add_edges_from([ l.rstrip().split()[:2] for l in infile ])

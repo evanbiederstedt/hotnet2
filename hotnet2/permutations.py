@@ -10,7 +10,8 @@ from . import hnio
 ################################################################################
 # Heat permutation
 
-def heat_permutation_wrapper(heat_scores, eligible_genes):
+def heat_permutation_wrapper(heat_permutation_wrapper_arg):
+    (heat_scores, eligible_genes) = heat_permutation_wrapper_arg
     permuted_genes = list(eligible_genes)
     random.shuffle(permuted_genes)
     permuted_genes = permuted_genes[:len(heat_scores)]
@@ -54,8 +55,8 @@ def permute_heat(heat, network_genes, num_permutations, addtl_genes=None, num_co
 ################################################################################
 # Mutation permutation
 
-def mutation_permuation_heat_wrapper(samples, genes, cnas, gene2length, bmr, gene2bmr, gene2chromo,
-                                     chromo2genes, cna_filter_threshold, min_freq):
+def mutation_permuation_heat_wrapper(mutation_permuation_heat_wrapper_arg):
+    (samples, genes, cnas, gene2length, bmr, gene2bmr, gene2chromo, chromo2genes, cna_filter_threshold, min_freq) = mutation_permuation_heat_wrapper_arg
     permuted_snvs = permute_snvs(samples, genes, gene2length, bmr, gene2bmr)
     permuted_cnas = permute_cnas(cnas, gene2chromo, chromo2genes)
     if cna_filter_threshold:
