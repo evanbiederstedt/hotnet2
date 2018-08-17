@@ -270,13 +270,13 @@ def load_oncodrive_data(fm_scores, cis_amp_scores, cis_del_scores):
         arrs = [l.rstrip().split("\t") for l in f if not l.startswith("#")]
     gene2fm.update((arr[1], float(arr[2])) for arr in arrs
                    if arr[2] != "" and arr[2] != "-0" and arr[2] != "-")
-    print(("\tFM genes:", len(list(gene2fm.keys()))))
+    print("\tFM genes:", len(list(gene2fm.keys())))
 
     # Load amplifications
     with open(cis_amp_scores) as f:
         arrs = [l.rstrip().split("\t") for l in f if not l.startswith("#")]
     gene2cis_amp.update((arr[0], float(arr[-1])) for arr in arrs)
-    print(("\tCIS AMP genes:", len(list(gene2cis_amp.keys()))))
+    print("\tCIS AMP genes:", len(list(gene2cis_amp.keys())))
 
     # Load deletions
     with open(cis_del_scores) as f:

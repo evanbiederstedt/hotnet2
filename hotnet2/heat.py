@@ -27,7 +27,7 @@ def filter_heat(heat, min_score, zero_genes=False, message=None):
 
     filtered_genes = set()
     filtered_heat = dict()
-    for gene, score in list(heat.items()):
+    for gene, score in heat.items():
         if score >= min_score:
             filtered_heat[gene] = score
         else:

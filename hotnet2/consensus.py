@@ -42,7 +42,7 @@ def consensus_with_stats(args, networks, heats, verbose=0):
 
     # Summarize stats
     consensus_stats = dict()
-    for k, count in list(count_consensus(consensus).items()):
+    for k, count in count_consensus(consensus).items():
         empirical = [ permuted_count[k] for permuted_count in permuted_counts ]
         if np == 0:
             pval     = 1.
@@ -155,4 +155,4 @@ def consensus_edges(components, networks):
         for cc in ccs:
             for u, v in combinations(cc, 2):
                 edges_to_networks[(u, v)].add(network)
-    return dict( (edge, len(edge_networks)) for edge, edge_networks in list(edges_to_networks.items()) )
+    return dict( (edge, len(edge_networks)) for edge, edge_networks in edges_to_networks.items() )

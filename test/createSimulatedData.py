@@ -138,7 +138,7 @@ def run(args):
     # Output sample random weights.
     for vertex_to_weight_sample, vertex_weight_file in zip(vertex_to_weight_samples, args.vertex_weight_files):
         with open(vertex_weight_file, 'w') as f:
-            vertex_weight_string = '\n'.join('\t'.join(map(str, (v, w))) for v, w in iter(list(vertex_to_weight_sample.items())))
+            vertex_weight_string = '\n'.join('\t'.join(map(str, (v, w))) for v, w in vertex_to_weight_sample.items())
             f.write(vertex_weight_string)
 
 if __name__ == "__main__":

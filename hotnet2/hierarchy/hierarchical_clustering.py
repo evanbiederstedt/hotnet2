@@ -46,7 +46,7 @@ def HD(V,A,increasing=False):
     SCCs = strongly_connected_components(A)
 
     if len(SCCs)>1:
-        largest_component_size = max(list(map(len,SCCs)))
+        largest_component_size = max(map(len,SCCs))
         number_vertices = len(V)
         for component in SCCs:
             if len(component)==largest_component_size:
