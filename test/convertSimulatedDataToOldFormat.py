@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 # Load required modules
 import sys, os, argparse, h5py, json, shutil, numpy as np

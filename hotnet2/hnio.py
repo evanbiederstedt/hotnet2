@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 import sys, os, json, h5py, numpy as np, scipy.io, networkx as nx
 from collections import defaultdict

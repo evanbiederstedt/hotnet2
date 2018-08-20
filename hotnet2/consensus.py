@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 import sys, os, networkx as nx, numpy
 from itertools import product, combinations

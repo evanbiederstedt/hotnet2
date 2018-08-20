@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 # Load required modules
 import networkx as nx, numpy as np, h5py

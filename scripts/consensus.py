@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 # Load required modules
 import os, sys, argparse, json, networkx as nx

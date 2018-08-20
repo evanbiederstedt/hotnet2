@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 """
 Union-find data structure.  The implementation below is copied from the NetworkX implementation 

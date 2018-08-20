@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 # Load required modules
 import sys, os, numpy as np, networkx as nx, scipy as sp, scipy.io

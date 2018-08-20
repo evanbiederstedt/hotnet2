@@ -1,4 +1,4 @@
-#!/usr/bin/env python3 
+#!/usr/bin/env python
 
 # Load the required modules
 import sys, os, json, pickle, os.path, scipy.io

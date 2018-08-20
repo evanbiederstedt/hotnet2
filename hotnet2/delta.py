@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 # Load required modules
 import multiprocessing as mp, numpy as np, scipy as sp, networkx as nx

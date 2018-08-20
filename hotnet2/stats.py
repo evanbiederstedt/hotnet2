@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
-
+#!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
+
 from collections import defaultdict
 import multiprocessing as mp
 import networkx as nx
