@@ -60,7 +60,7 @@ def consensus_run(args, networks, heats, verbose):
     for (infmat, indexToGene, G, nname, pnp), (heat, hname) in product(networks, heats):
         # Simple progress bar
         if args.verbose > 0: 
-            print('\t-', nname, hname)
+            print('\t- {} {}'.format(nname, hname))
 
         # 1) Filter the heat scores
         # 1a) Remove enes not in the network
