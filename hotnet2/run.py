@@ -35,14 +35,14 @@ def run_helper(args, infmat, full_index2gene, G, nname, pnp, heat, hname, addtl_
             print("\t- Using no. of components >= k (k \\in")
             print("[%s, %s]) as statistic" % (min(HN2_STATS_SIZES), max(HN2_STATS_SIZES)))
 
-        heat_permutations = p.permute_heat(heat, list(full_index2gene.values()),
+        heat_permutations = p.permute_heat(heat, full_index2gene.values(),
                                            args.heat_permutations, addtl_genes,
                                            args.num_cores)
         sizes2counts = stats.calculate_permuted_cc_counts(infmat, full_index2gene,
                                                           heat_permutations, delta, HN2_STATS_SIZES, True,
                                                           args.num_cores)
         real_counts = stats.num_components_min_size(G, HN2_STATS_SIZES)
-        size2real_counts = dict(list(zip(HN2_STATS_SIZES, real_counts)))
+        size2real_counts = dict(zip(HN2_STATS_SIZES, real_counts))
         sizes2stats = stats.compute_statistics(size2real_counts, sizes2counts,
                                                args.heat_permutations)
 

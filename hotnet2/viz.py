@@ -6,7 +6,7 @@ from collections import defaultdict
 def generate_viz_json(results, edges, network_name, gene2heat, snvs, cnas, sampleToType, d_score, d_name):
     output = dict(deltas=[], subnetworks=dict(), stats=dict(), gene2heat=gene2heat)
     predictions = set()
-    samples = list(sampleToType.keys())
+    samples = sampleToType.keys()
     for ccs, stats, delta in results:
         delta = format(delta, 'g')
         output['stats'][delta] = stats

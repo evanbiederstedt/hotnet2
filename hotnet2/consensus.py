@@ -33,7 +33,7 @@ def consensus_with_stats(args, networks, heats, verbose=0):
             permuted_single_runs[(hname, nname)].append(result)
 
     # Run consensus to compute observed statistics
-    network_heat_pairs = list(permuted_single_runs.keys())
+    network_heat_pairs = permuted_single_runs.keys()
     permuted_counts = []
     for i in range(np):
         runs = [ (n, h, permuted_single_runs[(n, h)][i]) for n, h in network_heat_pairs ]
@@ -91,11 +91,11 @@ def identify_consensus(single_runs, pval_threshold=0.01, min_cc_size=2, verbose=
     # Create the consensus graph
     edges = consensus_edges(components, networks)
     G = nx.Graph()
-    G.add_weighted_edges_from( (u, v, w) for (u, v), w in list(edges.items()) )
+    G.add_weighted_edges_from( (u, v, w) for (u, v), w in edges.items()) 
 
     # Extract the connected components when restricted to edges in all networks.
     H = nx.Graph()
-    H.add_edges_from( (u, v) for (u, v), w in list(edges.items()) if w >= num_networks )
+    H.add_edges_from( (u, v) for (u, v), w in edges.items() if w >= num_networks )
     consensus = [ set(cc) for cc in nx.connected_components( H ) ]
     consensus_genes = set( g for cc in consensus for g in cc )
 

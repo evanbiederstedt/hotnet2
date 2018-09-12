@@ -23,7 +23,7 @@ def filter_heat(heat, min_score, zero_genes=False, message=None):
 
     """
     if not min_score:
-        min_score = min([score for score in list(heat.values()) if score > 0])
+        min_score = min([score for score in heat.values() if score > 0])
 
     filtered_genes = set()
     filtered_heat = dict()
@@ -82,7 +82,7 @@ def filter_cnas(cnas, filter_thresh):
     for cna in cnas:
         genes2cnas[cna.gene].append(cna)
 
-    for gene_cnas in list(genes2cnas.values()):
+    for gene_cnas in genes2cnas.values():
         amp_count = float(len([cna for cna in gene_cnas if cna.mut_type == AMP]))
         del_count = float(len([cna for cna in gene_cnas if cna.mut_type == DEL]))
         if (amp_count / (amp_count + del_count)) >= filter_thresh:
@@ -200,7 +200,7 @@ def filter_heat_to_network_genes(gene2heat, network_genes, verbose):
     """
     filtered_heat = dict()
     num_removed = 0
-    for gene, heat in list(gene2heat.items()):
+    for gene, heat in gene2heat.items():
         if gene in network_genes:
             filtered_heat[gene] = heat
         else:

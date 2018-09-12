@@ -37,7 +37,7 @@ def network_significance_wrapper(network_significance_wrapper_arg):
     return num_components_min_size(G, sizes)
 
 def calculate_permuted_cc_counts_network(network_paths, infmat_name, index2gene, heat, delta,
-                                         sizes=list(range(2,11)), directed=True, num_cores=1):
+                                         sizes=range(2,11), directed=True, num_cores=1):
     """
     Return a dict mapping a CC size to a list of the number of CCs of that size or greater in
     each permutation.
@@ -63,7 +63,7 @@ def calculate_permuted_cc_counts_network(network_paths, infmat_name, index2gene,
 
     return size2counts
 
-def calculate_permuted_cc_counts(infmat, index2gene, heat_permutations, delta, sizes=list(range(2,11)), directed=True, num_cores=1):
+def calculate_permuted_cc_counts(infmat, index2gene, heat_permutations, delta, sizes=range(2,11), directed=True, num_cores=1):
     """
     Return a dict mapping a CC size to a list of the number of CCs of that size or greater in
     each permutation.
@@ -117,7 +117,7 @@ def compute_statistics(size2counts_real, size2counts_permuted, num_permutations)
     """
     num_permutations = float(num_permutations)
     size2stats = dict()
-    for size, counts in list(size2counts_permuted.items()):
+    for size, counts in size2counts_permuted.items():
         observed = size2counts_real[size]
         expected = sum(counts) / num_permutations
         pval = len([c for c in counts if c >= observed]) / num_permutations

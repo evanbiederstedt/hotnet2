@@ -38,7 +38,7 @@ def run(args):
     G = max(nx.connected_component_subgraphs(G), key=len)
 
     indexToGene = dict((i+1, gene) for i, gene in enumerate(sorted(G.nodes())))
-    geneToIndex = dict((gene, i) for i, gene in list(indexToGene.items()))
+    geneToIndex = dict((gene, i) for i, gene in indexToGene.items())
     edgelist = [(geneToIndex[u], geneToIndex[v]) for u, v in G.edges()]
 
     with open(args.edgelist_file, 'w') as f:

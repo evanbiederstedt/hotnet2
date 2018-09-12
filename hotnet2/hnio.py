@@ -349,7 +349,7 @@ def write_significance_as_tsv(output_file, sizes2stats):
     """
     with open(output_file, 'w') as out_f:
         out_f.write("Size\tExpected\tActual\tp-value\n")
-        for size, stats in list(sizes2stats.items()):
+        for size, stats in sizes2stats.items():
             out_f.write("%s\t%s\t%s\t%s\n" % (size, stats["expected"], stats["observed"], stats["pval"]))
 
 def write_gene_list(output_file, genelist):
@@ -383,7 +383,7 @@ def load_network(file_path, infmat_name):
     """
     H = load_hdf5(file_path)
     PPR = np.asarray(H[infmat_name], dtype=np.float32)
-    indexToGene = dict( list(zip(list(range(np.shape(PPR)[0])), H['nodes'])) )
+    indexToGene = dict( zip(range(np.shape(PPR)[0]), H['nodes']) )
     G = nx.Graph()
     G.add_edges_from(H['edges'])
     return PPR, indexToGene, G, H['network_name']

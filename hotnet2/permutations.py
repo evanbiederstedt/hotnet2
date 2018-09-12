@@ -16,7 +16,7 @@ def heat_permutation_wrapper(heat_permutation_wrapper_arg):
     random.shuffle(permuted_genes)
     permuted_genes = permuted_genes[:len(heat_scores)]
 
-    permuted_heat = dict((gene, heat) for gene, heat in list(zip(permuted_genes, heat_scores)))
+    permuted_heat = dict((gene, heat) for gene, heat in zip(permuted_genes, heat_scores))
 
     return permuted_heat
 

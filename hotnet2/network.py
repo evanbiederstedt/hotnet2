@@ -71,7 +71,7 @@ def save_diffusion_to_file( diffusion_type, diffusion_param, index_file, edge_fi
 
     # Run the diffusion and output to file
     output = dict(edges=G.edges(), nodes=nodes)
-    output.update(list(params.items()))
+    output.update(params.items())
     if diffusion_type == HOTNET2:
         output['beta'] = diffusion_param
         output['PPR']  = np.asarray(hotnet2_diffusion(G, nodes, output['beta'], verbose), dtype=np.float32)
@@ -91,11 +91,11 @@ def load_network_from_file(index_file, edge_file):
         indexToGene = dict((int(arr[0]), arr[1]) for arr in arrs)
 
     G = nx.Graph()
-    G.add_nodes_from( list(indexToGene.values()) ) # in case any nodes have degree zero
+    G.add_nodes_from(indexToGene.values()) # in case any nodes have degree zero
 
     # Load graph
     with open(edge_file) as infile:
-        edges = [ list(map(int, l.rstrip().split()[:2])) for l in infile ]
+        edges = [ map(int, l.rstrip().split()[:2]) for l in infile ]
     G.add_edges_from( [(indexToGene[u], indexToGene[v]) for u,v in edges] )
 
     return G

@@ -30,10 +30,10 @@ def similarity_matrix(infmat, index2gene, gene2heat, directed=True, verbose=0):
 
     """
     start_index = min(index2gene.keys())
-    gene2index = dict((gene, index) for index, gene in list(index2gene.items()))
+    gene2index = dict((gene, index) for index, gene in index2gene.items())
 
     # Identify genes in the given list that are also in the network
-    genelist = sorted(set(gene2heat.keys()).intersection(list(gene2index.keys())))
+    genelist = sorted(set(gene2heat.keys()).intersection(gene2index.keys()))
     index2gene = dict(enumerate(genelist))
     if verbose > 4:
         print("\t- Genes in similarity matrix:", len(genelist))
@@ -81,7 +81,7 @@ def weighted_graph(sim_mat, index2gene, delta, directed=True):
                 instance is returned. If false, a networkx Graph instance is returned.
 
     """
-    e = list(zip( *sp.where(sim_mat >= delta)))
+    e = zip( *sp.where(sim_mat >= delta))
     edges = [(int(j), int(i), dict(weight=sim_mat[i,j])) for i, j in e]
     G = nx.DiGraph() if directed else nx.Graph()
     G.add_edges_from([(index2gene[i], index2gene[j], d) for i, j, d in edges])
