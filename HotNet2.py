@@ -54,7 +54,7 @@ def get_parser():
                         'each line.')
     parser.add_argument('--output_hierarchy', default=False, required=False, action='store_true',
                         help='Output the hierarchical decomposition of the HotNet2 similarity matrix.')
-    parser.add_argument('--verbose', default=1, choices=list(range(5)), type=int, required=False,
+    parser.add_argument('--verbose', default=1, choices=range(5), type=int, required=False,
                         help='Set verbosity of output (minimum: 0, maximum: 5).')
 
     return parser
@@ -102,9 +102,8 @@ def run(args):
         # create the hierarchy if necessary
         if args.output_hierarchy:
             hierarchy_out_dir = '{}/hierarchy/'.format(output_dir)
-            if not os.path.isdir(hierarchy_out_dir): 
-                os.mkdir(hierarchy_out_dir)
-            CD.createDendrogram( sim, list(index2gene.values()), hierarchy_out_dir, params, verbose=False)
+            if not os.path.isdir(hierarchy_out_dir): os.mkdir(hierarchy_out_dir)
+            CD.createDendrogram( sim, index2gene.values(), hierarchy_out_dir, params, verbose=False)
 
     # Output the consensus
     hnio.output_consensus(consensus, linkers, auto_deltas, consensus_stats, params, args.output_directory)

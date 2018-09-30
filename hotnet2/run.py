@@ -10,7 +10,6 @@ from . import heat as hnheat, hotnet2 as hn, hnio, stats, permutations as p
 from .delta import get_deltas_for_network, get_deltas_for_heat
 from .constants import *
 
-
 def run_helper(args, infmat, full_index2gene, G, nname, pnp, heat, hname, addtl_genes, get_deltas_fn, infmat_name="PPR", max_cc_sizes=[5, 10, 15, 20], verbose=0):
     """Helper shared by runHotNet2 and runClassicHotNet.
     """

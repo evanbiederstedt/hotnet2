@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 
 # Load required modules
 import os, sys, multiprocessing as mp
@@ -71,7 +71,8 @@ def run(args):
         print("-------------------------------------------")
         perm_dir = '%s/permuted' % args.output_dir
         perm_path = '{}/{}_ppr_{:g}_##NUM##.h5'.format(perm_dir, args.prefix, args.beta)
-        if not os.path.exists(perm_dir): os.makedirs(perm_dir)
+        if not os.path.exists(perm_dir): 
+            os.makedirs(perm_dir)
         pargs = '-q %s -s %s -e %s -p %s -o %s -n %s -c %s' % (args.Q, args.permutation_start_index, args.edgelist_file,
                                                          args.prefix, perm_dir, args.num_permutations, args.cores)
         permute.run(permute.get_parser().parse_args(pargs.split()))

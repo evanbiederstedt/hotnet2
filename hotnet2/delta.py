@@ -14,7 +14,7 @@ strong_ccs = nx.strongly_connected_components
 def get_component_sizes(arrs):
     return [len(arr) for arr in arrs]
 
-def delta_too_small(component_sizes, max_size):
+def delta_too_small(component_sizes, max_size ):
     # print "\t\t\t", max(component_sizes)
     if max_size > max(component_sizes): 
         return True
@@ -22,8 +22,7 @@ def delta_too_small(component_sizes, max_size):
         return False
 
 def find_best_delta_by_largest_cc(permuted_sim, permuted_index, sizes, directed, start_quant=0.99, verbose=0):
-    """
-    Return a dict mapping each size in sizes to the smallest delta such that the size of the
+    """Return a dict mapping each size in sizes to the smallest delta such that the size of the
     largest CC in the graph corresponding the the given similarity matrix is <= that size.
 
     Arguments:
@@ -79,8 +78,7 @@ def find_best_delta_by_largest_cc(permuted_sim, permuted_index, sizes, directed,
 Edge = namedtuple("Edge", ["node1", "node2", "weight"])
 
 def find_best_delta_by_num_ccs(permuted_sim, ks, start=0.05):
-    """
-    Return a dict mapping each size in ks to the median delta that maximizes the number of
+    """Return a dict mapping each size in ks to the median delta that maximizes the number of
     connected components of size at least k in the graph corresponding the the given similarity
     matrix.
 
@@ -104,7 +102,7 @@ def find_best_delta_by_num_ccs(permuted_sim, ks, start=0.05):
 def find_best_delta_by_num_ccs_for_given_k(permuted_sim, edges, k):
 
     if k < 2:
-            raise ValueError("k must be at least 2")
+        raise ValueError("k must be at least 2")
 
     max_num_ccs = 0 #initially, each node is its own CC of size 1, so none is of size >= k for k >= 2
     bestDeltas = [edges[0].weight]
@@ -132,8 +130,8 @@ def get_edges(sim, start=.05):
     edges = edges[:int(start*len(edges))]
     return edges
 
-def network_delta_wrapper(network_delta_wrapper_arg):
-    (network_path, infmat_name, index2gene, heat, sizes, directed, selection_function, verbose) = network_delta_wrapper_arg
+def network_delta_wrapper(network_delta_wrapper_args):
+    (network_path, infmat_name, index2gene, heat, sizes, directed, selection_function, verbose) = network_delta_wrapper_args
     permuted_mat = np.asarray(hnio.load_hdf5(network_path)[infmat_name], np.float32)
     sim, index2gene = hn.similarity_matrix(permuted_mat, index2gene, heat, directed, verbose)
     if selection_function is find_best_delta_by_largest_cc:
@@ -145,8 +143,7 @@ def network_delta_wrapper(network_delta_wrapper_arg):
 
 def network_delta_selection(network_paths, infmat_name, index2gene, heat, sizes, directed=True,
                             num_cores=1, selection_fn=find_best_delta_by_largest_cc, verbose=0):
-    """
-    Return a dict mapping each size in sizes to a list of the best deltas for each permuted
+    """Return a dict mapping each size in sizes to a list of the best deltas for each permuted
     network for that size.
 
     Arguments:
@@ -169,6 +166,7 @@ def network_delta_selection(network_paths, infmat_name, index2gene, heat, sizes,
 
     args = [(network_path, infmat_name, index2gene, heat, sizes, directed,
              selection_fn, verbose) for network_path in network_paths]
+
     delta_maps = map_fn(network_delta_wrapper, args)
 
     if num_cores != 1:
@@ -182,8 +180,8 @@ def network_delta_selection(network_paths, infmat_name, index2gene, heat, sizes,
 
     return sizes2deltas
 
-def heat_delta_wrapper(heat_delta_wrapper_arg):
-    (infmat, index2gene, heat_permutation, directed, sizes, selection_function) = heat_delta_wrapper_arg
+def heat_delta_wrapper(heat_delta_wrapper_args):
+    (infmat, index2gene, heat_permutation, directed, sizes, selection_function) = heat_delta_wrapper_args
     sim, index2gene = hn.similarity_matrix(infmat, index2gene, heat_permutation, directed)
     if selection_function is find_best_delta_by_largest_cc:
         return selection_function(sim, index2gene, sizes, directed)
@@ -195,8 +193,7 @@ def heat_delta_wrapper(heat_delta_wrapper_arg):
 #list of num_permutations dicts of max cc size => best delta
 def heat_delta_selection(infmat, index2gene, heat_permutations, sizes, directed=True, num_cores=1,
                          selection_fn=find_best_delta_by_largest_cc):
-    """
-    Return a dict mapping each size in sizes to a list of the best deltas for each heat
+    """Return a dict mapping each size in sizes to a list of the best deltas for each heat
     permutation for that size.
 
     Arguments:
@@ -254,7 +251,7 @@ def get_deltas_for_heat(infmat, index2gene, gene2heat, addtl_genes, num_permutat
                         sizes, classic, num_cores, verbose=0):
     if verbose > 3: 
         print("* Performing permuted heat delta selection...")
-    heat_permutations = permutations.permute_heat(gene2heat, list(index2gene.values()), num_permutations,
+    heat_permutations = permutations.permute_heat(gene2heat, index2gene.values(), num_permutations,
                                                   addtl_genes, num_cores)
     return get_deltas_from_heat_permutations(infmat, index2gene, heat_permutations, test_statistic,
                                              sizes, classic, num_cores, verbose)
@@ -265,7 +262,7 @@ def get_deltas_for_mutations(args, infmat, index2gene, heat_params, verbose=0):
 
     heat_permutations = permutations.generate_mutation_permutation_heat(
                             heat_params["heat_fn"], heat_params["sample_file"],
-                            heat_params["gene_file"], list(index2gene.values()), heat_params["snv_file"],
+                            heat_params["gene_file"], index2gene.values(), heat_params["snv_file"],
                             args.gene_length_file, args.bmr, args.bmr_file, heat_params["cna_file"],
                             args.gene_order_file, heat_params["cna_filter_threshold"],
                             heat_params["min_freq"], args.num_permutations, args.num_cores)

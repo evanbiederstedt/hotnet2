@@ -8,7 +8,6 @@ from .constants import *
 from .heat import filter_heat, filter_heat_to_network_genes
 from .permutations import permute_heat
 
-
 def count_consensus(consensus, sizes=HN2_STATS_SIZES):
     cc_sizes = [ len(d['core'] + d['expansion']) for d in consensus ]
     return dict( (s, sum(1 for cc_size in cc_sizes if cc_size >= s)) for s in sizes )
@@ -28,7 +27,7 @@ def consensus_with_stats(args, networks, heats, verbose=0):
         # 1b) Genes with score 0 cannot be in output components, but are eligible for heat in permutations
         heat, addtl_genes = filter_heat(heat, None, False, 'There are ## genes with heat score 0')
 
-        for permutation in permute_heat(heat, list(indexToGene.values()), np, addtl_genes, args.num_cores):
+        for permutation in permute_heat(heat, indexToGene.values(), np, addtl_genes, args.num_cores):
             result = run_helper(args, infmat, indexToGene, G, nname, pnp, heat, hname, addtl_genes, get_deltas_hotnet2, HN2_INFMAT_NAME, HN2_MAX_CC_SIZES, verbose=verbose)
             permuted_single_runs[(hname, nname)].append(result)
 
@@ -60,10 +59,10 @@ def consensus_run(args, networks, heats, verbose):
     for (infmat, indexToGene, G, nname, pnp), (heat, hname) in product(networks, heats):
         # Simple progress bar
         if args.verbose > 0: 
-            print('\t- {} {}'.format(nname, hname))
+            print('\t-', nname, hname)
 
         # 1) Filter the heat scores
-        # 1a) Remove enes not in the network
+        # 1a) Remove genes not in the network
         heat = filter_heat_to_network_genes(heat, set(indexToGene.values()), verbose)
 
         # 1b) Genes with score 0 cannot be in output components, but are eligible for heat in permutations
@@ -91,7 +90,7 @@ def identify_consensus(single_runs, pval_threshold=0.01, min_cc_size=2, verbose=
     # Create the consensus graph
     edges = consensus_edges(components, networks)
     G = nx.Graph()
-    G.add_weighted_edges_from( (u, v, w) for (u, v), w in edges.items()) 
+    G.add_weighted_edges_from( (u, v, w) for (u, v), w in edges.items() )
 
     # Extract the connected components when restricted to edges in all networks.
     H = nx.Graph()

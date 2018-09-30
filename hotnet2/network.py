@@ -91,7 +91,7 @@ def load_network_from_file(index_file, edge_file):
         indexToGene = dict((int(arr[0]), arr[1]) for arr in arrs)
 
     G = nx.Graph()
-    G.add_nodes_from(indexToGene.values()) # in case any nodes have degree zero
+    G.add_nodes_from( indexToGene.values() ) # in case any nodes have degree zero
 
     # Load graph
     with open(edge_file) as infile:

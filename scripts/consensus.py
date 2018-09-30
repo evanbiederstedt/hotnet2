@@ -11,7 +11,7 @@ from hotnet2.consensus import identify_consensus
 
 # Argument parser
 def get_parser():
-    description = 'Constructs consensus subnetworks from HotNet(2) results.'
+    description = 'Constructs consensus subnetworks from HotNet2 results.'
 
     parser = argparse.ArgumentParser(description=description, fromfile_prefix_chars='@')
     parser.add_argument('-d', '--directories', nargs='*', default=[],

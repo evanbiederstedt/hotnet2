@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 def linkage(T):
     """
     This function converts a tree from our current format to a linkage matrix Z
@@ -111,7 +109,7 @@ def reorder(Z, V):
     reordered_Z = [[y for y in z] for z in Z]
 
     for i in range(len(Z)):
-        for j in reversed(list(range(2))):
+        for j in reversed(range(2)):
             if Z[i][j]<n:
                 reordered_Z[i][j] = order[Z[i][j]]
 

@@ -2,6 +2,8 @@
 
 import numpy as np, random, networkx as nx
 from itertools import combinations
+import itertools
+import string
 import os, sys, argparse
 
 def get_parser():
@@ -36,7 +38,6 @@ def letter_range(*args):
     In [4]: letter_range(12345)[-6:]
     Out[4]: ['cssx', 'cssy', 'cssz', 'cstt', 'cstu', 'cstv']
     """
-    import itertools, string
 
     if len(args)==1:
         m, n, s = 0, args[0], 1

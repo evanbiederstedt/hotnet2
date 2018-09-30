@@ -1,9 +1,8 @@
-#!/usr/bin/env python
+s#!/usr/bin/python
 
 # Load the required modules
 import sys, os, json, pickle, os.path, scipy.io
 sys.path.append(os.path.normpath(os.path.dirname(os.path.realpath(__file__)) + '/../'))
-
 from hotnet2 import hotnet2 as hn
 from hotnet2 import hnap, hnio, heat as hnheat
 from hotnet2.hierarchy import HD, convertToLinkage, convertToNewick
@@ -86,7 +85,7 @@ def run(args):
 	sim, index2gene = hn.similarity_matrix(infmat, full_index2gene, heat, True)
 
 	# Create and output the dendrogram
-	createDendrogram( sim, list(index2gene.values()), args.output_directory, vars(args), args.verbose )
+	createDendrogram( sim, index2gene.values(), args.output_directory, vars(args), args.verbose )
 
 if __name__ == "__main__": 
 	run( get_parser().parse_args(sys.argv[1:]))

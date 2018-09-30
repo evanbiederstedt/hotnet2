@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 from . import hnio
 from collections import defaultdict
 

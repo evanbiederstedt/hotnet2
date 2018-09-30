@@ -6,8 +6,7 @@ import scipy
 from .constants import Mutation, SNV, AMP, DEL
 
 def filter_heat(heat, min_score, zero_genes=False, message=None):
-    """
-    Returns (1) a dict mapping gene names to heat scores where all non-zero heat scores are at
+    """Returns (1) a dict mapping gene names to heat scores where all non-zero heat scores are at
     least min_score and any genes that originally had score less than min_score either have score 0
     or are excluded depending on the value of zero_genes; and (2) a set of the genes that had scores
     less than min_score
@@ -41,8 +40,7 @@ def filter_heat(heat, min_score, zero_genes=False, message=None):
     return filtered_heat, filtered_genes
 
 def num_snvs(mutations):
-    """
-    Return the number of valid SNVs in the given iterable of Mutations
+    """Return the number of valid SNVs in the given iterable of Mutations
     (those with mut_type == SNV and valid == True).
 
     Arguments:
@@ -52,8 +50,7 @@ def num_snvs(mutations):
     return len([mut for mut in mutations if mut.mut_type == SNV and mut.valid])
 
 def num_cnas(mutations):
-    """
-    Return the number of valid CNAs in the given iterable of Mutations
+    """Return the number of valid CNAs in the given iterable of Mutations
     (those with mut_type == AMP or DEL and valid == True).
 
     Arguments:
@@ -63,8 +60,7 @@ def num_cnas(mutations):
     return len([mut for mut in mutations if (mut.mut_type == AMP or mut.mut_type == DEL) and mut.valid])
 
 def filter_cnas(cnas, filter_thresh):
-    """
-    Return a list of Mutation tuples in which CNAs in genes where the proportion of CNAs in the
+    """Return a list of Mutation tuples in which CNAs in genes where the proportion of CNAs in the
     gene across samples is less than filter_thresh have their "valid" field set to False. CNAs in
     genes whose CNAs pass the threshold that are of the opposite type of the dominant type in the gene
     also have their "valid" field set to False.
@@ -106,8 +102,7 @@ def get_invalidated_mutation(mutation):
     return Mutation(mutation.sample, mutation.gene, mutation.mut_type, False)
 
 def mut_heat(genes, num_samples, snvs, cnas, min_freq):
-    """
-    Return a dict mapping gene name to heat score based on the given mutation data.
+    """Return a dict mapping gene name to heat score based on the given mutation data.
 
     Arguments:
     genes -- iterable of genes tested for mutations
@@ -124,11 +119,10 @@ def mut_heat(genes, num_samples, snvs, cnas, min_freq):
         genes2mutations[snv.gene].add(snv)
     for cna in cnas:
         genes2mutations[cna.gene].add(cna)
-    print("* Calculating heat scores for %s genes in %s samples at min frequency %s" %
-          (len(genes2mutations), num_samples, min_freq))
+    print("* Calculating heat scores for %s genes in %s samples at min frequency %s" % (len(genes2mutations), num_samples, min_freq))
 
     gene2heat = dict()
-    for gene, mutations in list(genes2mutations.items()):
+    for gene, mutations in genes2mutations.items():
         snv_mut_samples = set( m.sample for m in mutations if m.mut_type == SNV and m.valid )
         cna_mut_samples = set( m.sample for m in mutations if (m.mut_type == AMP or m.mut_type == DEL) and m.valid )
 
@@ -148,7 +142,7 @@ def fm_heat(gene2heat, fm_threshold, cis_threshold=0.01, CIS=False):
         print("\tIncluding CIS scores at threshold", cis_threshold, "...")
     heat = dict()
     src_fm, src_cis_amp, src_cis_del = 0, 0, 0
-    for g, scores in list(gene2heat.items()):
+    for g, scores in gene2heat.items():
         if CIS:
             del_score = scores["del"] if scores["del"] < cis_threshold else NULL
             amp_score = scores["amp"] if scores["amp"] < cis_threshold else NULL
@@ -157,15 +151,11 @@ def fm_heat(gene2heat, fm_threshold, cis_threshold=0.01, CIS=False):
                 continue
             min_val = min(del_score, amp_score, fm_score)
             heat[g] = -log10( min_val )
-            if min_val == scores["fm"]: 
-                src_fm += 1
-            elif min_val == scores["amp"]: 
-                src_cis_amp += 1
-            elif min_val == scores["del"]: 
-                src_cis_del += 1
+            if min_val == scores["fm"]: src_fm += 1
+            elif min_val == scores["amp"]: src_cis_amp += 1
+            elif min_val == scores["del"]: src_cis_del += 1
         else:
-            if scores["fm"] >= fm_threshold: 
-                continue
+            if scores["fm"] >= fm_threshold: continue
             heat[g] = -log10(scores["fm"])
             src_fm += 1
     print("\t- Genes using FM score:", src_fm)
@@ -176,19 +166,25 @@ def fm_heat(gene2heat, fm_threshold, cis_threshold=0.01, CIS=False):
 
 def mutsig_heat(gene2mutsig, threshold=1.0):
     print("* Creating MutSig heat map...")
-    gene2heat = dict((gene, -log10(score["qval"])) for gene, score in gene2mutsig.items() if score["qval"] < threshold)
+    gene2heat = dict((gene, -log10(score["qval"]))
+                     for gene, score in gene2mutsig.items()
+                     if score["qval"] < threshold)
     print("\t- Including", len(gene2heat), "genes at threshold", threshold)
     return gene2heat
 
 def music_heat(gene2music, threshold=1.0, max_heat=15):
     print("* Creating MuSiC heat map...")
     print("\t- Mapping q-values of 0 to", max_heat)
+
     def music_heat(qvals):
         heat = scipy.median([ qvals["FDR_CT"], qvals["FDR_LRT"], qvals["FDR_FCPT"] ])
         return -log10(heat) if heat != 0 else max_heat
-    gene2heat = dict((gene, music_heat(scores)) for gene, scores in list(gene2music.items()) if scipy.median(list(scores.values())) < threshold)
+
+    gene2heat = dict((gene, music_heat(scores)) for gene, scores in gene2music.items()
+                     if scipy.median(scores.values()) < threshold)
     print("\t- Including", len(gene2heat), "genes at threshold", threshold)
     return gene2heat
+
 
 def filter_heat_to_network_genes(gene2heat, network_genes, verbose):
     """Return a dict mapping genes to heat scores such that only genes in the network are included.
@@ -212,8 +208,7 @@ def filter_heat_to_network_genes(gene2heat, network_genes, verbose):
     return filtered_heat
 
 def reconcile_heat_with_tested_genes(gene2heat, tested_genes):
-    """
-    Return a dict mapping gene names to heat scores containing for each gene in tested_genes
+    """Return a dict mapping gene names to heat scores containing for each gene in tested_genes
     and only for genes in tested_genes. Genes in tested_genes not in gene2heat will be given a
     score of 0.
 
