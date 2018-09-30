@@ -229,7 +229,8 @@ def load_fusions(fusion_file, gene_wlst=None, sample_wlst=None, ):
 def include_fusion(sample_wlst, gene_wlst, sample, gene1, gene2):
     if sample_wlst and sample not in sample_wlst: 
         return False
-    if not gene_wlst: return True
+    if not gene_wlst: 
+        return True
     if gene1 not in gene_wlst and gene2 not in gene_wlst: 
         return False
     elif (gene1 in gene_wlst and not gene2 in gene_wlst) or \
@@ -381,10 +382,6 @@ def load_network(file_path, infmat_name):
     to figure out how to load the file.
     """
     H = load_hdf5(file_path)
-    print("PRINTING H[infmat_name] ")
-    print(H[infmat_name])
-    print("PRINTING H[infmat_name] TYPE")
-    print(type(H[infmat_name]))
     PPR = np.asarray(H[infmat_name], dtype=np.float32)
     indexToGene = dict( zip(range(np.shape(PPR)[0]), H['nodes']) )
     G = nx.Graph()
@@ -405,27 +402,25 @@ def load_hdf5(file_path, keys=None):
         dictionary loaded from the HDF5 file
     """
     f = h5py.File(file_path, 'r')
-    if keys:
+    if keys:    
+        ## this conditional should only be used for debugging
+        ## here we decode only specific keys encoded via 'save_hdf5()', i.e. 'edges' and 'nodes';
+        ## if other keys have string-like values, there will be h5py errors
         ## dictionary = {key:f[key].value for key in keys if key in f}
-        print("WHOOPS!")
+        for key in keys:
+            if key == "edges" or key == 'nodes':
+                dictionary[key] = f[key].value.astype(np.unicode_)
+            else:
+                dictionary[key] = f[key].value
     else:
         dictionary = dict()
         for key in f:
-            print("LOAD HDF5 FUN!  dictionary = {key:f[key].value for key in f} ")
             if key == "edges" or key == 'nodes':
-                print('DECODING!!! ')
-                print("PRINT TYPE")
-                print(type(f[key].astype(np.unicode_)))
-                print("np.asarray(dictionary[key]).astype(np.unicode_)")
+                ## then expliclty encode in unicode to avoid h5py error in python3
                 dictionary[key] = f[key].value.astype(np.unicode_)
             else:
-                print("WE HIT THE ELSE")
-                print(key)
                 dictionary[key] = f[key].value
-                print("SAVE HDF5 A")
-                print(f[key])
-                print("SAVE HDF5 B TYPE")
-                print(type(f[key]))
+
     f.close()
     return dictionary
 
@@ -450,22 +445,11 @@ def save_hdf5(file_path, dictionary, compression=False):
         if compression:
             f.create_dataset(key, data=dictionary[key], compression='gzip')
         else:
-            print("here's the first bug....")
             if key == "edges" or key == 'nodes':
-                print('CONDITIONAL if type() == TRIPPED!')
-                print("PRINT TYPE")
-                print(type(dictionary[key]))
-                print("not encoding...")
-                print("np.asarray(dictionary[key]).astype('S15')")
+                ## cast array as byte-string
                 f[key] = np.asarray(dictionary[key]).astype('S15')
             else:
-                print("WE HIT THE ELSE")
-                print(key)
                 f[key] = dictionary[key]
-                print("SAVE HDF5 A")
-                print(dictionary[key])
-                print("SAVE HDF5 B TYPE")
-                print(type(dictionary[key]))
     f.close()
 
 # Wrapper for loading a heat file, automatically detecting if it's JSON or TSV
