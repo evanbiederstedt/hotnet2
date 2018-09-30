@@ -408,6 +408,8 @@ def load_hdf5(file_path, keys=None):
         ## if other keys have string-like values, there will be h5py errors
         ## dictionary = {key:f[key].value for key in keys if key in f}
         for key in keys:
+            if key not in f:
+                raise KeyError("Error in load_hdf5(), key not found in HDF5. Please check 'keys' parameter in load_hdf5().")
             if key == "edges" or key == 'nodes':
                 dictionary[key] = f[key].value.astype(np.unicode_)
             else:
