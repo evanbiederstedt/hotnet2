@@ -70,7 +70,7 @@ def filter_cnas(cnas, filter_thresh):
     filter_thresh -- the proportion of CNAs in a gene that must be of the same type
 
     """
-    if filter_thresh <= .5:
+    if filter_thresh <= 0.5:
         raise ValueError("filter_thresh must be greater than .5")
 
     filtered_cnas = list()
@@ -151,11 +151,15 @@ def fm_heat(gene2heat, fm_threshold, cis_threshold=0.01, CIS=False):
                 continue
             min_val = min(del_score, amp_score, fm_score)
             heat[g] = -log10( min_val )
-            if min_val == scores["fm"]: src_fm += 1
-            elif min_val == scores["amp"]: src_cis_amp += 1
-            elif min_val == scores["del"]: src_cis_del += 1
+            if min_val == scores["fm"]: 
+                src_fm += 1
+            elif min_val == scores["amp"]: 
+                src_cis_amp += 1
+            elif min_val == scores["del"]: 
+                src_cis_del += 1
         else:
-            if scores["fm"] >= fm_threshold: continue
+            if scores["fm"] >= fm_threshold: 
+                continue
             heat[g] = -log10(scores["fm"])
             src_fm += 1
     print("\t- Genes using FM score:", src_fm)
