@@ -9,10 +9,11 @@ install:
     - sudo apt-get -y install r-base
     - pip install codecov
     - pip install -r requirements.txt
+    - pwd
     - cd hotnet2
     - python hotnet2/setup_fortran.py build_src build_ext --inplace
     - python hotnet2/setup_c.py build_src build_ext --inplace
-    - cd ..
+    - ## cd ..
 script:
     - nosetests
 after_success:
