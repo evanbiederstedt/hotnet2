@@ -3,8 +3,7 @@
 import sys, os, json, h5py, numpy as np, scipy.io, networkx as nx
 from collections import defaultdict
 from .constants import *
-from .hotnet2 import component_sizes 
-
+from .hotnet2 import component_sizes
 
 ################################################################################
 # Data loading functions
@@ -234,7 +233,8 @@ def include_fusion(sample_wlst, gene_wlst, sample, gene1, gene2):
         return True
     if gene1 not in gene_wlst and gene2 not in gene_wlst: 
         return False
-    elif (gene1 in gene_wlst and not gene2 in gene_wlst) or (gene2 in gene_wlst and not gene1 in gene_wlst):
+    elif (gene1 in gene_wlst and not gene2 in gene_wlst) or \
+         (gene2 in gene_wlst and not gene1 in gene_wlst):
         raise ValueError('Genes %s and %s are in a fusion, but one is disallowed by the gene'\
                           'whitelist' % (gene1, gene2))
     return True
@@ -270,23 +270,23 @@ def load_oncodrive_data(fm_scores, cis_amp_scores, cis_del_scores):
         arrs = [l.rstrip().split("\t") for l in f if not l.startswith("#")]
     gene2fm.update((arr[1], float(arr[2])) for arr in arrs
                    if arr[2] != "" and arr[2] != "-0" and arr[2] != "-")
-    print("\tFM genes:", len(list(gene2fm.keys())))
+    print("\tFM genes:", len(gene2fm.keys()))
 
     # Load amplifications
     with open(cis_amp_scores) as f:
         arrs = [l.rstrip().split("\t") for l in f if not l.startswith("#")]
     gene2cis_amp.update((arr[0], float(arr[-1])) for arr in arrs)
-    print("\tCIS AMP genes:", len(list(gene2cis_amp.keys())))
+    print("\tCIS AMP genes:", len(gene2cis_amp.keys()))
 
     # Load deletions
     with open(cis_del_scores) as f:
         arrs = [l.rstrip().split("\t") for l in f if not l.startswith("#")]
     gene2cis_del.update((arr[0], float(arr[-1])) for arr in arrs)
-    print(("\tCIS DEL genes:", len(list(gene2cis_del.keys()))))
+    print("\tCIS DEL genes:", len(gene2cis_del.keys()))
 
     # Merge data
     genes = set(gene2cis_del.keys()) | set(gene2cis_amp.keys()) | set(gene2fm.keys())
-    print(("\t- No. genes:", len(genes)))
+    print("\t- No. genes:", len(genes))
     gene2heat = dict()
     for g in genes:
         gene2heat[g] = {"del": gene2cis_del[g], "amp": gene2cis_amp[g],
@@ -349,7 +349,7 @@ def write_significance_as_tsv(output_file, sizes2stats):
     """
     with open(output_file, 'w') as out_f:
         out_f.write("Size\tExpected\tActual\tp-value\n")
-        for size, stats in list(sizes2stats.items()):
+        for size, stats in sizes2stats.items():
             out_f.write("%s\t%s\t%s\t%s\n" % (size, stats["expected"], stats["observed"], stats["pval"]))
 
 def write_gene_list(output_file, genelist):
@@ -383,7 +383,7 @@ def load_network(file_path, infmat_name):
     """
     H = load_hdf5(file_path)
     PPR = np.asarray(H[infmat_name], dtype=np.float32)
-    indexToGene = dict( list(zip(list(range(np.shape(PPR)[0])), H['nodes'])) )
+    indexToGene = dict( zip(range(np.shape(PPR)[0]), H['nodes']) )
     G = nx.Graph()
     G.add_edges_from(H['edges'])
     return PPR, indexToGene, G, H['network_name']
@@ -402,10 +402,27 @@ def load_hdf5(file_path, keys=None):
         dictionary loaded from the HDF5 file
     """
     f = h5py.File(file_path, 'r')
-    if keys:
-        dictionary = {key:f[key].value for key in keys if key in f}
+    if keys:    
+        ## this conditional should only be used for debugging
+        ## here we decode only specific keys encoded via 'save_hdf5()', i.e. 'edges' and 'nodes';
+        ## if other keys have string-like values, there will be h5py errors
+        ## dictionary = {key:f[key].value for key in keys if key in f}
+        for key in keys:
+            if key not in f:
+                raise KeyError("Error in load_hdf5(), key not found in HDF5. Please check 'keys' parameter in load_hdf5().")
+            if key == "edges" or key == 'nodes':
+                dictionary[key] = f[key].value.astype(np.unicode_)
+            else:
+                dictionary[key] = f[key].value
     else:
-        dictionary = {key:f[key].value for key in f}
+        dictionary = dict()
+        for key in f:
+            if key == "edges" or key == 'nodes':
+                ## then expliclty encode in unicode to avoid h5py error in python3
+                dictionary[key] = f[key].value.astype(np.unicode_)
+            else:
+                dictionary[key] = f[key].value
+
     f.close()
     return dictionary
 
@@ -430,7 +447,11 @@ def save_hdf5(file_path, dictionary, compression=False):
         if compression:
             f.create_dataset(key, data=dictionary[key], compression='gzip')
         else:
-            f[key] = dictionary[key]
+            if key == "edges" or key == 'nodes':
+                ## cast array as byte-string
+                f[key] = np.asarray(dictionary[key]).astype('S15')
+            else:
+                f[key] = dictionary[key]
     f.close()
 
 # Wrapper for loading a heat file, automatically detecting if it's JSON or TSV
@@ -473,14 +494,16 @@ def load_heat_file(heat_file, json_heat):
 
 # create output directory if doesn't exist; warn if it exists and is not empty
 def setup_output_dir(output_dir):
-    if not os.path.exists(output_dir): os.makedirs(output_dir)
+    if not os.path.exists(output_dir): 
+        os.makedirs(output_dir)
 
 # Output a single run of HotNet2
 def output_hotnet2_run(result, params, network_name, heat, heat_name, heat_file, using_json_heat, output_dir):
     for ccs, sizes2stats, delta in result:
         # create output directory
         delta_out_dir = os.path.abspath(output_dir + "/delta_" + str(delta))
-        if not os.path.isdir(delta_out_dir): os.mkdir(delta_out_dir)
+        if not os.path.isdir(delta_out_dir): 
+            os.mkdir(delta_out_dir)
 
         # Output a heat JSON file if JSON heat wasn't included
         if not using_json_heat:

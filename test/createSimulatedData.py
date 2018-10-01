@@ -2,6 +2,8 @@
 
 import numpy as np, random, networkx as nx
 from itertools import combinations
+import itertools
+import string
 import os, sys, argparse
 
 def get_parser():
@@ -36,7 +38,6 @@ def letter_range(*args):
     In [4]: letter_range(12345)[-6:]
     Out[4]: ['cssx', 'cssy', 'cssz', 'cstt', 'cstu', 'cstv']
     """
-    import itertools, string
 
     if len(args)==1:
         m, n, s = 0, args[0], 1
@@ -104,7 +105,7 @@ def run(args):
     random.shuffle(implanted_vertices)
     random.shuffle(nonimplanted_vertices)
     sorted_vertices = implanted_vertices + nonimplanted_vertices
-    vertex_to_weight = dict((v, w) for v, w in list(zip(sorted_vertices, sorted_weights)))
+    vertex_to_weight = dict((v, w) for v, w in zip(sorted_vertices, sorted_weights))
 
     # Sample the random network.
     G_samples = []
@@ -129,7 +130,7 @@ def run(args):
         vertex_to_index = dict((v, i+1) for i, v in enumerate(sampled_vertices))
         edge_list = [[vertex_to_index[u], vertex_to_index[v]] for u, v in G_sample.edges() if u!=v]
         with open(index_vertex_file, 'w') as f:
-            index_vertex_string = '\n'.join('\t'.join(map(str, (i, v))) for v, i in list(vertex_to_index.items()))
+            index_vertex_string = '\n'.join('\t'.join(map(str, (i, v))) for v, i in vertex_to_index.items())
             f.write(index_vertex_string)
         with open(edge_list_file, 'w') as f:
             edge_list_string = '\n'.join('\t'.join(map(str, edge)) for edge in edge_list)

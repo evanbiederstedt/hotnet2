@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 
 ###############################################################################
 #
@@ -488,7 +488,7 @@ if __name__ == "__main__":
 
         V = edges_to_vertices(E)
         n = len(V)
-        indices = {V[i]:i for i in list(range(n))}
+        indices = {V[i]:i for i in range(n)}
 
         A = np.zeros((n,n),dtype=np.float)
         for (source,target,weight) in E:
@@ -809,7 +809,7 @@ if __name__ == "__main__":
     print('=== Test 1 ===')
     V, A, E = tarjan_1983_example()
 
-    T = HD(V, A, increasing=True)
+    T = HD(V,A,increasing=True)
     weights, clusters = cluster(T)
 
     print('Weights added in increasing order:')

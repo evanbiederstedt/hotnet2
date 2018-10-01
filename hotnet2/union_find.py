@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """
 Union-find data structure.  The implementation below is copied from the NetworkX implementation 
 (see https://github.com/networkx/) but adds explicit root tracking and external access to the 

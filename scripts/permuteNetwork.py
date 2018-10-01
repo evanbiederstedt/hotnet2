@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 
 # Load required modules
 import sys, os, networkx as nx, multiprocessing as mp
@@ -38,8 +38,8 @@ def permute_network( G, Q, numEdges, outputFile ):
     return swaps
 
 store = dict(maxSeen=-1)
-def permute_network_wrapper(permute_network_wrapper_arg):
-    (G, Q, numEdges, outputFile, i, n) = permute_network_wrapper_arg
+def permute_network_wrapper(permute_network_wrapper_args):
+    (G, Q, numEdges, outputFile, i, n) = permute_network_wrapper_args
     swaps = permute_network( G, Q, numEdges, outputFile )
     store['maxSeen'] = max(store['maxSeen'], i)
     sys.stdout.write("\r{}/{}".format(store['maxSeen'], n))
@@ -68,14 +68,15 @@ def run(args):
 
     n = args.num_permutations
     if args.cores != 1:
-        cores = mp.cpu_count() if args.cores == -1 else min(args.cores, mp.cpu_count)
+        cores = mp.cpu_count() if args.cores == -1 else min(args.cores, mp.cpu_count())
         jobArgs = [ (G, Q, numEdges, outputFileName(i), i+args.start_index, n) for i in range(n) ]
         pool    = mp.Pool(cores)
         swaps = pool.map(permute_network_wrapper, jobArgs)
         pool.close()
         pool.join()
     else:
-        swaps = [ permute_network_wrapper((G, Q, numEdges, outputFileName(i), i+args.start_index, n)) for i in range(n) ]
+        swaps = [ permute_network_wrapper((G, Q, numEdges, outputFileName(i), i+args.start_index, n))
+                  for i in range(n) ]
 
 
     # Report how many swaps were actually made

@@ -10,13 +10,13 @@ from . import hnio
 ################################################################################
 # Heat permutation
 
-def heat_permutation_wrapper(heat_permutation_wrapper_arg):
-    (heat_scores, eligible_genes) = heat_permutation_wrapper_arg
+def heat_permutation_wrapper(heat_permutation_args):
+    (heat_scores, eligible_genes) = heat_permutation_args
     permuted_genes = list(eligible_genes)
     random.shuffle(permuted_genes)
     permuted_genes = permuted_genes[:len(heat_scores)]
 
-    permuted_heat = dict((gene, heat) for gene, heat in list(zip(permuted_genes, heat_scores)))
+    permuted_heat = dict((gene, heat) for gene, heat in zip(permuted_genes, heat_scores))
 
     return permuted_heat
 
@@ -55,8 +55,8 @@ def permute_heat(heat, network_genes, num_permutations, addtl_genes=None, num_co
 ################################################################################
 # Mutation permutation
 
-def mutation_permuation_heat_wrapper(mutation_permuation_heat_wrapper_arg):
-    (samples, genes, cnas, gene2length, bmr, gene2bmr, gene2chromo, chromo2genes, cna_filter_threshold, min_freq) = mutation_permuation_heat_wrapper_arg
+def mutation_permuation_heat_wrapper(mutation_permuation_heat_args):
+    (samples, genes, cnas, gene2length, bmr, gene2bmr, gene2chromo, chromo2genes, cna_filter_threshold, min_freq) = mutation_permuation_heat_args
     permuted_snvs = permute_snvs(samples, genes, gene2length, bmr, gene2bmr)
     permuted_cnas = permute_cnas(cnas, gene2chromo, chromo2genes)
     if cna_filter_threshold:
@@ -161,7 +161,7 @@ def permute_cnas(cnas, gene2chromo, chromo2genes):
     permuted_cnas = []
     for sample in samples2cnas:
         chromo2blocks = get_cna_blocks_for_sample(samples2cnas[sample], gene2chromo, chromo2genes)
-        for chromo, blocks in list(chromo2blocks.items()):
+        for chromo, blocks in chromo2blocks.items():
             genes = chromo2genes[chromo]
             invalid_indices = []
             for block in blocks:
@@ -184,7 +184,7 @@ def get_block_indices(chromo_length, block_length, invalid_indices, max_attempts
         start = random.randint(0, chromo_length - block_length)
         attempts += 1
 
-    return list(range(start, start + block_length))
+    return range(start, start + block_length)
     
 
 def is_block_valid(start, block_length, invalid_indices):
@@ -219,7 +219,6 @@ def get_cna_blocks_for_sample(cnas, gene2chromo, chromo2genes):
             curr_start_index = cna_index
             curr_mut_type = cna.mut_type
             curr_genes = [cna.gene]
-    chromo2blocks[curr_chromo].append(Block(curr_chromo, curr_start_index,
-                                            curr_mut_type, curr_genes))
+    chromo2blocks[curr_chromo].append(Block(curr_chromo, curr_start_index, curr_mut_type, curr_genes))
 
     return chromo2blocks

@@ -65,7 +65,7 @@ def run( args ):
 							  num_subnetworks=num_subnetworks, data=data,
 							  is_consensus=is_consensus)
 
-				results.append( result )
+				results.append(result)
 		except IOError:
 			continue
 
